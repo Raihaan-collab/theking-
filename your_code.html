@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinGo & TRX Checker (Matrix Style)</title>
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            color: #00ff00;
+            background: black;
+        }
+
+        /* Password Container */
+        #password-container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 255, 0, 0.5);
+            border: 1px solid #00ff00;
+        }
+
+        #password-container h2 {
+            color: #00ff00;
+        }
+
+        #password-container input {
+            padding: 10px;
+            font-size: 16px;
+            width: 80%;
+            border: 1px solid #00ff00;
+            background-color: black;
+            color: #00ff00;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        #password-container button {
+            padding: 10px 20px;
+            background-color: #00ff00;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        /* Main Content */
+        #main-content {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 255, 0, 0.5);
+            text-align: center;
+            width: 300px;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        h1 {
+            color: #00ff00;
+        }
+
+        input {
+            padding: 10px;
+            width: 90%;
+            font-size: 16px;
+            border: 1px solid #00ff00;
+            background-color: black;
+            color: #00ff00;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #00ff00;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #00cc00;
+        }
+
+        #result {
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ff00;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            right: 15px;
+            color: #00ff00;
+            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace;
+            opacity: 0.8;
+            z-index: 2;
+        }
+
+        /* Matrix Background */
+        #matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        /* Rain Effect */
+        .rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .drop {
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background: #00ff00;
+            opacity: 0.7;
+            animation: rain-fall linear infinite;
+        }
+
+        @keyframes rain-fall {
+            0% {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Password Input Layer -->
+    <div id="password-container">
+        <h2>Enter Password</h2>
+        <input type="password" id="passwordInput" placeholder="Enter password">
+        <button onclick="checkPassword()">Submit</button>
+        <p id="error-message"></p>
+    </div>
+
+    <!-- Main Content (Initially Hidden) -->
+    <div id="main-content">
+        <!-- Matrix Effect Layer -->
+        <div id="matrix"></div>
+
+        <!-- Rain Effect Layer -->
+        <div class="rain" id="rain"></div>
+
+        <div class="container">
+            <h1>WinGo & TRX Checker</h1>
+            <input type="number" id="numberInput" placeholder="ပွဲစဉ်၏နောက်ဆုံးနံပါတ် 3 လုံးထည့်ပါ" min="0" max="1000">
+            <button onclick="checkSize()">CHECK</button>
+            <div id="result"></div>
+        </div>
+
+        <!-- Footer Text -->
+        <div class="footer">Powered by The Ancient One</div>
+    </div>
+
+    <script>
+        // Password Check Function
+        function checkPassword() {
+            const password = document.getElementById("passwordInput").value;
+            const errorMessage = document.getElementById("error-message");
+            if (password === "theking") {
+                document.getElementById("password-container").style.display = "none";
+                document.getElementById("main-content").style.display = "block";
+                createRain();
+            } else {
+                errorMessage.innerText = "Incorrect Password! Try Again.";
+            }
+        }
+
+        // Rain Effect Generator
+        function createRain() {
+            const rain = document.getElementById('rain');
+            const numberOfDrops = 100;
+
+            for (let i = 0; i < numberOfDrops; i++) {
+                const drop = document.createElement('div');
+                drop.classList.add('drop');
+                drop.style.left = `${Math.random() * 100}vw`;
+                drop.style.animationDuration = `${Math.random() * 1 + 0.5}s`;
+                drop.style.animationDelay = `${Math.random() * 2}s`;
+                rain.appendChild(drop);
+            }
+        }
+
+        // Function to Check Number Size
+        function getSize(number) {
+            return number % 2 === 0 ? "အကြီး" : "အသေး";
+        }
+
+        function checkSize() {
+            const input = document.getElementById('numberInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = "";
+
+            const number = parseInt(input, 10);
+
+            if (isNaN(number) || number < 0 || number > 1000) {
+                resultDiv.innerHTML = "ကျေးဇူးပြု၍ 0 မှ 1000 အတွင်း နံပါတ်ထည့်ပါ။";
+                return;
+            }
+
+            const size = getSize(number);
+            resultDiv.innerHTML = `<strong>${number}</strong>: ${size}`;
+        }
+    </script>
+
+</body>
+</html>
